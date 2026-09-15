@@ -69,6 +69,7 @@ interface RawTransportRoute {
   NPCType?: { Category?: string } | null;
   StartLocation?: RawTransportPoint;
   Transportations?: Record<string, RawTransportPoint & {
+    Cost?: number;
     Route?: RawTransportPoint[];
   }>;
 }
@@ -134,6 +135,7 @@ function buildNpcTransportRoutes(rawTransport: Record<string, RawTransportRoute>
         routeId,
         routeName: sub.Name || moveType || `Route ${routeId}`,
         moveType,
+        cost: sub.Cost ?? null,
         start,
         landing,
       });
@@ -213,6 +215,7 @@ function npcMapIcon(raw: RawNpcType, canStartMission: boolean): string {
   if (category === 'Combi') return mapIcon('combination_npc.png');
   if (category === 'Defense') return mapIcon('defense_npc.png');
   if (name === 'Guide Changer') return mapIcon('guide_changer_npc.png');
+  if (name.includes('Sweeper')) return mapIcon('haircut_vendor_npc.png');
   if (canStartMission) return mapIcon('mission_start_npc.png');
   if (category === 'StartEcom') return mapIcon('race_start_sact_npc.png');
   if (category === 'EndEcom') return mapIcon('race_end_sact_npc.png');

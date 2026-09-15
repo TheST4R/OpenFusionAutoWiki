@@ -156,6 +156,7 @@ interface RawTransportRoute {
   NPCType?: { Name?: string; Icon?: string; Category?: string } | null;
   StartLocation?: { Name?: string; AreaZone?: string; X?: number; Y?: number; Z?: number };
   Transportations?: Record<string, {
+    Cost?: number;
     AreaZone?: string;
     Name?: string;
     Icon?: string;
@@ -314,6 +315,7 @@ function npcMapIcon(category: string, name: string, items: RawVendorItem[], canS
   if (category === 'Combi') return mapIcon('combination_npc.png');
   if (category === 'Defense') return mapIcon('defense_npc.png');
   if (name === 'Guide Changer') return mapIcon('guide_changer_npc.png');
+  if (name.includes('Sweeper')) return mapIcon('haircut_vendor_npc.png');
   if (canStartMission) return mapIcon('mission_start_npc.png');
   if (category === 'StartEcom') return mapIcon('race_start_sact_npc.png');
   if (category === 'EndEcom') return mapIcon('race_end_sact_npc.png');
@@ -569,6 +571,7 @@ function buildTransportIndex(
           routeId,
           routeName: sub.Name || route.MoveType || `Route ${routeId}`,
           moveType: route.MoveType ?? '',
+          cost: sub.Cost ?? null,
           startNpc,
           stops: stops.map((s) => ({ ...s, isHere: s.areaZone === z })),
           routePoints,

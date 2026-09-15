@@ -4,7 +4,7 @@ import ErrorState from '../components/ErrorState';
 import { MINIMAP_PX, worldToPx } from '../data/minimapCoords';
 import { buildWorldMapMarkers, buildWorldTransportRoutes, MAP_MARKER_KIND_LABELS, MAP_MARKER_KINDS, type MapMarker, type MapMarkerKind } from '../data/mapMarkers';
 import type { Area } from '../data/types';
-import { buildPageTitle, useBuildEntry } from '../data/useBuildEntry';
+import { useBuildEntry } from '../data/useBuildEntry';
 import { TITLE_SEPARATOR, useDocumentTitle } from '../data/useDocumentTitle';
 
 const WORLD_MARKER_SCREEN_SIZE = 32;
@@ -12,6 +12,7 @@ const WORLD_MARKER_CULL_BUFFER = WORLD_MARKER_SCREEN_SIZE * 2;
 const WORLD_ROUTE_SCREEN_WIDTH = 2;
 const WORLD_ROUTE_ACTIVE_SCREEN_WIDTH = 4;
 const MIN_WORLD_MAP_ZOOM = 1.5;
+const INITIAL_WORLD_MAP_ZOOM = 2;
 const MAX_WORLD_MAP_ZOOM = 24;
 
 type VisibleMarkerKinds = Record<MapMarkerKind, boolean>;
@@ -83,7 +84,7 @@ export default function WorldMap() {
   const entry = useBuildEntry(build);
   const { areas, loading, error } = useAreas(build);
   const [offset, setOffset] = useState({ x: -520, y: -520 });
-  const [zoom, setZoom] = useState(MIN_WORLD_MAP_ZOOM);
+  const [zoom, setZoom] = useState(INITIAL_WORLD_MAP_ZOOM);
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
   const [hoverRoutes, setHoverRoutes] = useState<string[]>([]);
   const [visibleKinds, setVisibleKinds] = useState<VisibleMarkerKinds>(() => defaultVisibleMarkerKinds());
@@ -94,7 +95,7 @@ export default function WorldMap() {
   const drag = useRef<{ pointerId: number; startX: number; startY: number; originX: number; originY: number } | null>(null);
   const pinch = useRef<{ startDistance: number; startZoom: number; anchorX: number; anchorY: number } | null>(null);
 
-  useDocumentTitle(entry ? `World Map${TITLE_SEPARATOR}${buildPageTitle(entry)}` : build ? `World Map${TITLE_SEPARATOR}${build}` : null);
+  useDocumentTitle(entry ? `World Map${TITLE_SEPARATOR}${entry.displayName}` : build ? `World Map${TITLE_SEPARATOR}${build}` : null);
 
   useEffect(() => { zoomRef.current = zoom; }, [zoom]);
   useEffect(() => { offsetRef.current = offset; }, [offset]);
@@ -182,7 +183,7 @@ export default function WorldMap() {
   return (
     <section className="world-map-page">
       <p className="breadcrumb muted">
-        <Link to={`/${build}`}>{entry ? buildPageTitle(entry) : build}</Link>
+        <Link to={`/${build}`}>{entry ? entry.displayName : build}</Link>
       </p>
       <h1>World Map</h1>
       {error && <ErrorState title="Couldn't load the map" message="Area data failed to load." detail={error} />}
